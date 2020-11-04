@@ -1,14 +1,106 @@
 import time, random
 from PlayingCards import cards
 
-# 1 ~ 53 리스트를 만들고 셔플, 키값을 셔플한 것과 동일
-Deck = []
-for i in range(1, 53):
-    Deck.append(i)
-random.shuffle(Deck) 
+# 베팅 시스템
+# 처음부터 다시 짜야 겠는데
+#
+#
 
-# 개요, 메뉴 화면
+# 1 ~ 53 리스트를 만들고 셔플, 키값을 셔플한 것과 동일
+class Player:
+    def __init__(self, name, type, chips, hand, card_sum, card_number):
+        self.name = name
+        self.type = type
+        self.chips = chips
+        self.hand = hand
+        self.card_sum = card_sum
+        self.card_number = card_number
+    
+class UserPlayer(Player):
+    def __init__(self):
+        Player.__init__(self, "사용자", "User", 50,[], 0, 0)
+
+    def draw(self):
+        self.card_number += 1
+        draw = cards[Deck[0]]
+        print (f"{self.name}의 {self.card_number}번째 카드 : {draw}")
+        self.hand.append(draw)
+        self.card_sum += UserPlayer.cardcal_user(self, draw[-1])
+        print (f"{self.name}의 현재 카드 : {self.hand}")
+        print (f"{self.name}의 현재 합 : {self.card_sum}")
+        del Deck[0]    
+        time.sleep(1)
+        if self.card_sum == 21:
+            print (f"{self.name}님이 [Blackjack]을 완성했습니다.")
+        elif self.card_sum > 21:
+            print (f"{self.name}님이 [Bust]되었습니다.")
+            self.card_sum = "Bust"
+
+    def cardcal_user(self, cardlast):
+        if cardlast == "A":
+            while True:
+                A = int(input("1과 11중 무엇으로 하시겠습니까?"))
+                if A == 1 or A == 11:
+                    return int(A)
+                else:
+                    print ("잘못된 값을 입력하셨습니다.")
+                    continue
+        elif cardlast == "0" or cardlast == "J" or cardlast == "Q" or cardlast == "K":
+            return 10
+        else:
+            return int(cardlast[-1])
+
+    def hit_or_stay(self):
+        while True:
+            choice = input("Hit or Stay? ")
+            if choice == "Hit" or choice == "hit" or choice == "H" or choice == "h":
+                return "Hit"
+            elif choice == "Stay" or choice == "stay" or choice == "S" or choice == "s":
+                return "Stay"
+            else:
+                print ("잘못 입력하셨습니다. Hit 나 Stay 중 하나를 입력해주십시오.")
+                continue
+
+class DealerPlayer(Player):
+    def __init__(self):
+        Player.__init__(self, "딜러", "Dealer", 50,[], 0, 0)
+    
+    def draw(self):
+        self.card_number += 1
+        draw = cards[Deck[0]]
+        print (f"뽑은 카드 : {draw}")
+        print (f"{self.name}의 {self.card_number}번째 카드 : {draw}")
+        self.hand.append(draw)
+        self.card_sum += DealerPlayer.cardcal_dealer(self, draw[-1])
+        print (f"{self.name}의 현재 카드 : {self.hand}")
+        print (f"{self.name}의 현재 합 : {self.card_sum}")
+        del Deck[0]    
+        time.sleep(3)
+        if self.card_sum == 21:
+            print (f"{self.name}님이 [Blackjack]을 완성했습니다.")
+        elif self.card_sum > 21:
+            print (f"{self.name}님이 [Bust]되었습니다.")
+            self.card_sum = "Bust"
+
+    def cardcal_dealer(self, cardlast):
+        if cardlast == "A":
+            if self.card_sum > 10:
+                return 1
+            else:
+                return 11
+        elif cardlast == "0" or cardlast == "J" or cardlast == "Q" or cardlast == "K":
+            return 10
+        else:
+            return int(cardlast[-1])
+    
+    def hit_or_stay(self):
+        if self.card_sum < 17:
+            return "Hit"
+        else:
+            return "Stay"
+
 def introduction():
+
     while True:
 
         print ("=" * 100)
@@ -19,17 +111,40 @@ def introduction():
         print ("2. 룰 설명")
         print ("3. 나가기")
 
-        celect = input()
-        celect = int(celect)
+        select = input()
+        select = int(select)
 
-        if celect == 1:
+        if select == 1:
+            # print ("=" * 100)
+            # print ("{0: >50}".format("어떤 게임을 하시겠습니까?"))
+            # print ("=" * 100)
+            time.sleep(2)
             print ("=" * 100)
             print ("{0: >50}".format("게임을 시작합니다."))
             print ("=" * 100)
-            time.sleep(2)
             Game()
+            # print ("=" * 100)
+            # print ("{0: >50}".format("1. 기본"))
+            # print ("{0: >50}".format("2. 1대1"))
+            # print ("=" * 100)
+            # while True:
+            #     select = input()
+            #     select = int(select)
+            #     if select == 1:
+            #         print ("=" * 100)
+            #         print ("{0: >50}".format("게임을 시작합니다."))
+            #         print ("=" * 100)
+            #         Game()
+            #     elif select == 2:
+            #         print ("=" * 100)
+            #         print ("{0: >50}".format("게임을 시작합니다."))
+            #         print ("=" * 100)
+            #         Game()
+            #     else:
+            #         print ("다시 입력해주십시오.")
+            #         continue
 
-        elif celect == 2:
+        elif select == 2:
             print ("=" * 100)
             print ("{0: >50}".format("블랙잭은 21에 가까운 수를 만들면 이기는 게임입니다."))
             print ("=" * 100)
@@ -46,13 +161,13 @@ def introduction():
             print ("{0: >50}".format("숫자의 합이 21을 넘어가면 Bust로 즉시 패배합니다."))
             print ("=" * 100)
             time.sleep(3)
-            print ("{0: >50}".format("플레이어의 차례가 끝나면 딜러의 차례입니다."))
+            print ("{0: >50}".format("플레이어의 차례가 끝나면 상대의 차례입니다."))
             print ("=" * 100)
             time.sleep(3)
             print ("{0: >50}".format("딜러는 숫자의 합이 17 이상이 될때까지 무조건 히트를 합니다."))
             print ("=" * 100)
             time.sleep(3)
-            print ("{0: >50}".format("딜러보다 합이 높거나, 딜러가 Bust되면 플레이어의 승리입니다."))
+            print ("{0: >50}".format("상대보다 합이 높거나, 상대가 Bust되면 플레이어의 승리입니다."))
             print ("=" * 100)
             time.sleep(3)              
             continue
@@ -66,188 +181,64 @@ def introduction():
 
 # 게임 진행
 def Game():
-    PlayerCardsum = 0
-    while True:
-        if PlayerCardsum > 21:
-            print ("Bust!!!")
-            time.sleep(1)
-            print ("플레이어의 패배입니다.")
-            time.sleep(1)
-            retry = input("다시 하시겠습니까? Y/N")
-            if retry == "Y" or retry == "y":
-                Game()
-            else:
-                break
-        # Deck[0]부터 하나씩 지워가며 카드를 뽑음, 변수에 cards에 덱의 키값를 넣고 문자열인 벨류를 변수에 할당
-        print ("=" * 100)
-        print ("{0: >50}".format("카드를 제공 합니다."))
-        print ("=" * 100)
-        time.sleep(3)
-        
-        # 문자열을 정수로 변환, 10/J/Q/K는 10으로 바꿔주는 작업
-        
-        Draw = cards[Deck[0]]
-        print ("첫번째 카드 : {0}".format(Draw))
-        PlayerCardsum += CardCal_Player(Draw[-1])
-        del Deck[0]    
-        time.sleep(1)
 
-        Draw = cards[Deck[0]]
-        print ("두번째 카드 : {0}".format(Draw))
-        PlayerCardsum += CardCal_Player(Draw[-1])
-        del Deck[0]
-        time.sleep(1)    
-        print ("합 : {0}".format(PlayerCardsum))
-        
-        if PlayerCardsum > 21:
+    user = UserPlayer()
+    dealer = DealerPlayer()
+
+    global Deck
+    Deck = []
+    for i in range(1, 53):
+        Deck.append(i)
+    random.shuffle(Deck)
+
+    user.draw()
+    user.draw()
+    while user.card_sum != "Bust" and dealer.card_sum != "Bust":
+        choice = user.hit_or_stay()
+        if choice == "Hit":
+            user.draw()
             continue
-        
-        # 히트할 것인지 스테이 할 것인지 결정
-        
-        while True:
-            if PlayerCardsum > 21:
-                break
-            
-            choice = HitStay()
-
+        else:
+            break
+    if user.card_sum != "Bust":
+        dealer.draw()
+        dealer.draw()
+        while dealer.card_sum != "Bust":
+            choice = dealer.hit_or_stay()
             if choice == "Hit":
-                print ("=" * 100)
-                print ("{0: >50}".format("카드를 뽑습니다."))
-                print ("=" * 100)
-                time.sleep(2)
-                Draw = cards[Deck[0]]
-                print ("뽑은 카드 : {0}".format(Draw))
-                PlayerCardsum += CardCal_Player(Draw[-1])
-                print ("합 : {0}".format(PlayerCardsum))
-                del Deck[0]
+                print ("Hit.")
+                dealer.draw()
                 continue
-            elif choice == "Stay":
-                break
-        if PlayerCardsum > 21:
-            continue
-        
-        # 딜러의 턴으로 넘어간다
-        Dealer_result = Dealer_turn()
-        
-        # 승자를 정한다
-        Winner(PlayerCardsum, Dealer_result)
-
-# 카드의 마지막 문자를 인덱싱해서 정수형으로 전환, 합산
-def CardCal_Player(cardlast):
-    if cardlast[-1] == "A":
-        while True:
-            A = int(input("1과 11중 무엇으로 하시겠습니까?"))
-            if A == 1 or A == 11:
-                return int(A)
             else:
-                print ("잘못된 값을 입력하셨습니다.")
-                continue
-    elif cardlast == "0" or cardlast == "J" or cardlast == "Q" or cardlast == "K":
-        return 10
-    else:
-        return int(cardlast[-1])
+                print ("Stay.")
+                break
 
-# Hit할 것인지 Stay할 것인지 결정
-def HitStay():
-    while True:
-        answer = input("Hit or Stay? ")
-        if answer == "Hit" or answer == "hit" or answer == "H" or answer == "h":
-            return "Hit"
-        elif answer == "Stay" or answer == "stay" or answer == "S" or answer == "s":
-            return "Stay"
-        else:
-            print ("잘못 입력하셨습니다. Hit 나 Stay 중 하나를 입력해주십시오.")
-            continue
-
-# 기능이 불필요하여 삭제
-# def Bustcheck(PlayerCardsum):
-#     if PlayerCardsum == 21:
-#         print ("[Blackjack!!!]")
-#         return PlayerCardsum
-#     elif PlayerCardsum > 21:
-#         print ("[Bust...]")
-#         return "Bust"
-#     else:
-#         return PlayerCardsum
-
-# 딜러의 차례, 정해진 규칙에 따르게끔, 숫자의 합을 리턴한다.
-def Dealer_turn():
-    
-    print ("=" * 100)
-    print ("{0: >50}".format("딜러의 차례입니다."))
-    print ("=" * 100)
-    time.sleep(3)
-    print ("=" * 100)
-    print ("{0: >50}".format("딜러가 카드를 뽑습니다."))
-    print ("=" * 100)
-    time.sleep(3)
-
-    DealerCardsum = 0
-    Draw = cards[Deck[0]]
-    print ("첫번째 카드 : {0}".format(Draw))
-    DealerCardsum += CardCal_Dealer(Draw[-1], DealerCardsum)
-    del Deck[0]
-    time.sleep(1)
-
-    Draw = cards[Deck[0]]
-    print ("두번째 카드 : {0}".format(Draw))
-    DealerCardsum += CardCal_Dealer(Draw[-1], DealerCardsum)
-    del Deck[0]
-    time.sleep(1)
-
-    print ("합 : {0}".format(DealerCardsum))
-    time.sleep(1)
-    while True:
-        if DealerCardsum < 17:
-            Draw = cards[Deck[0]]
-            print ("=" * 100)
-            print ("{0: >50}".format("[Hit.]"))
-            print ("=" * 100)
-            time.sleep(2)
-            print ("뽑은 카드 : {0}".format(Draw))       
-            DealerCardsum += CardCal_Dealer(Draw[-1], DealerCardsum)
-            del Deck[0]
-            time.sleep(2)
-            print ("합 : {0}".format(DealerCardsum))
-        elif DealerCardsum > 21:
-            DealerCardsum = "Bust"
-            break
-        else:
-            print ("=" * 100)
-            print ("{0: >50}".format("[Stay.]"))
-            print ("=" * 100)
-            time.sleep(2)
-            break
-    return DealerCardsum
-
-# 딜러의 합산은 따로 만들어준다.
-def CardCal_Dealer(cardlast, DealerCardsum):
-    if cardlast == "A":
-        if DealerCardsum > 10:
-            return 1
-        else:
-            return 11
-    elif cardlast == "0" or cardlast == "J" or cardlast == "Q" or cardlast == "K":
-        return 10
-    else:
-        return int(cardlast[-1])
-
-# 값을 비교하여 승자를 결정한 후 다시 할 것인지 정한다.
-def Winner(PlayerCardsum, Dealer_result):
-    print (f"플레이어 : {PlayerCardsum}")
-    print (f"딜러 : {Dealer_result}")
-    if Dealer_result == "Bust":
-        print ("플레이어의 승리입니다.")
-    elif PlayerCardsum >= Dealer_result:
-        print ("플레이어의 승리입니다.")
-    else:
-        print ("딜러의 승리입니다.")
+    Winner(user.card_sum, dealer.card_sum)
 
     retry = input("다시 하시겠습니까? Y/N ")
     if retry == "Y" or retry == "y":
         Game()
     else:
         introduction()
+# 값을 비교하여 승자를 결정한 후 다시 할 것인지 정한다.
+def Winner(user, rival):
+    print (f"사용자 : {user}")
+    print (f"상대방 : {rival}")
+    if rival == "Bust":
+        print ("사용자의 승리입니다.")
+    elif user == "Bust":
+        print ("상대방의 승리입니다.")
+    elif user >= rival:
+        print ("사용자의 승리입니다.")
+    else:
+        print ("상대방의 승리입니다.")
 
+# def basic_hand(self):
+#     print ("=" * 100)
+#     print ("{0: >50}".format("카드를 제공 합니다."))
+#     print ("=" * 100)
+#     self.Draw()
+#     time.sleep(3)
 
 introduction()
+
