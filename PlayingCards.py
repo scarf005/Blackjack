@@ -1,38 +1,22 @@
 cards = [""]
 
 # card[1 ~ 13] 스페이드 카드
+values = ["A", 2, 3, 4, 5, 6, 7, 8, 9, 10, "J", "Q", "K"]
 
-cards.append("Spade A")
-for i in range(2, 11):
-    cards.append("Spade " + str(i))
-cards.append("Spade J")
-cards.append("Spade Q")
-cards.append("Spade K")
-# A, 2 ~ 10, J, Q, K
+for i in range(len(values)):
+    cards.append("Spade " + str(values[i]))
 
 # card[14 ~ 26] 다이아몬드 카드
-cards.append("Diamond A")
-for i in range(2, 11):
-    cards.append("Diamond " + str(i))
-cards.append("Diamond J")
-cards.append("Diamond Q")
-cards.append("Diamond K")
+for i in range(len(values)):
+    cards.append("Diamond " + str(values[i]))
 
 # card[27 ~ 39] 하트 카드
-cards.append("Heart A")
-for i in range(2, 11):
-    cards.append("Heart " + str(i))
-cards.append("Heart J")
-cards.append("Heart Q")
-cards.append("Heart K")
+for i in range(len(values)):
+    cards.append("Heart " + str(values[i]))
 
 # card[40 ~ 52] 하트 카드
-cards.append("Club A")
-for i in range(2, 11):
-    cards.append("Club " + str(i))
-cards.append("Club J")
-cards.append("Club Q")
-cards.append("Club K")
+for i in range(len(values)):
+    cards.append("Club " + str(values[i]))
 
 if __name__ == "__main__":
     from pprint import pprint
