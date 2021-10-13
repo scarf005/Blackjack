@@ -5,17 +5,15 @@
 40 ~ 52: 클럽
 """
 Cards = list[str]
-cards: Cards = []
-
 values: list[str | int] = ["A", *range(2, 10 + 1), "J", "Q", "K"]
 
-def append_symbol_set_to_cards(symbol: str):
-    for value in values:
-        cards.append(f"{symbol} {value}")
 
+def create_symbol_set(symbol: str):
+    return [f"{symbol} {value}" for value in values]
 
+cards: Cards = []
 for symbol in ["Spade", "Diamond", "Heart", "Club"]:
-    append_symbol_set_to_cards(symbol)
+    cards.extend(create_symbol_set(symbol))
 
 
 if __name__ == "__main__":
