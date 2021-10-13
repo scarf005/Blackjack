@@ -172,16 +172,16 @@ def introduction():
             Game()
 
         elif select == 2:
-            print("{0: >50}".format("블랙잭은 21에 가까운 수를 만들면 이기는 게임입니다."))
+            pad_print("블랙잭은 21에 가까운 수를 만들면 이기는 게임입니다.")
             print(
                 "{0: >50}".format("J, Q, K는 10으로, A는 1과 11 어느쪽으로든 계산할 수 있습니다.")
             )
-            print("{0: >50}".format("시작하며 카드 두장을 기본으로 지급받습니다."))
-            print("{0: >50}".format("카드를 더 뽑으면 Hit, 뽑지 않고 차례를 마치면 Stay."))
-            print("{0: >50}".format("숫자의 합이 21을 넘어가면 Bust로 즉시 패배합니다."))
-            print("{0: >50}".format("플레이어의 차례가 끝나면 상대의 차례입니다."))
-            print("{0: >50}".format("딜러는 숫자의 합이 17 이상이 될때까지 무조건 히트를 합니다."))
-            print("{0: >50}".format("상대보다 합이 높거나, 상대가 Bust되면 플레이어의 승리입니다."))
+            pad_print("시작하며 카드 두장을 기본으로 지급받습니다.")
+            pad_print("카드를 더 뽑으면 Hit, 뽑지 않고 차례를 마치면 Stay.")
+            pad_print("숫자의 합이 21을 넘어가면 Bust로 즉시 패배합니다.")
+            pad_print("플레이어의 차례가 끝나면 상대의 차례입니다.")
+            pad_print("딜러는 숫자의 합이 17 이상이 될때까지 무조건 히트를 합니다.")
+            pad_print("상대보다 합이 높거나, 상대가 Bust되면 플레이어의 승리입니다.")
             continue
 
         else:
@@ -193,6 +193,8 @@ def log(string: str):
     print(string)
     print("=" * 100)
 
+def pad_print(string: str):
+    print("{0: >50}".format(string))
 
 # 시작할 때마다 손패를 초기화한다.
 
