@@ -151,10 +151,7 @@ def introduction():
 
         if wanna_play == False:
             break
-
-        print("=" * 100)
-        print("{0: >50}".format("블랙잭에 오신 것을 환영합니다."))
-        print("=" * 100)
+        log("{0: >50}".format("블랙잭에 오신 것을 환영합니다."))
         print("1. 게임 시작")
         print("2. 룰 설명")
         print("3. 나가기")
@@ -164,52 +161,37 @@ def introduction():
 
         if select == 1:
             if user.chips == 0:
-
-                print("=" * 100)
-                print("{0: >50}".format("기본칩 50개를 증정합니다."))
-                print("=" * 100)
+                log("{0: >50}".format("기본칩 50개를 증정합니다."))
                 user.chips = 50
             else:
+                log("{0: >50}".format("한 번 오신 적이 있으시군요."))
+                log("{0: >50}".format(f"남은 칩은 {user.chips}개 입니다."))
 
-                print("=" * 100)
-                print("{0: >50}".format("한 번 오신 적이 있으시군요."))
-                print("=" * 100)
-
-                print("=" * 100)
-                print("{0: >50}".format(f"남은 칩은 {user.chips}개 입니다."))
-                print("=" * 100)
-
-            print("=" * 100)
-            print("{0: >50}".format("게임을 시작합니다."))
-            print("=" * 100)
+            log("{0: >50}".format("게임을 시작합니다."))
 
             Game()
 
         elif select == 2:
-            print("=" * 100)
             print("{0: >50}".format("블랙잭은 21에 가까운 수를 만들면 이기는 게임입니다."))
-            print("=" * 100)
             print(
                 "{0: >50}".format("J, Q, K는 10으로, A는 1과 11 어느쪽으로든 계산할 수 있습니다.")
             )
-            print("=" * 100)
             print("{0: >50}".format("시작하며 카드 두장을 기본으로 지급받습니다."))
-            print("=" * 100)
             print("{0: >50}".format("카드를 더 뽑으면 Hit, 뽑지 않고 차례를 마치면 Stay."))
-            print("=" * 100)
             print("{0: >50}".format("숫자의 합이 21을 넘어가면 Bust로 즉시 패배합니다."))
-            print("=" * 100)
             print("{0: >50}".format("플레이어의 차례가 끝나면 상대의 차례입니다."))
-            print("=" * 100)
             print("{0: >50}".format("딜러는 숫자의 합이 17 이상이 될때까지 무조건 히트를 합니다."))
-            print("=" * 100)
             print("{0: >50}".format("상대보다 합이 높거나, 상대가 Bust되면 플레이어의 승리입니다."))
-            print("=" * 100)
             continue
 
         else:
             wanna_play = False
             break
+
+def log(string: str):
+    print("=" * 100)
+    print(string)
+    print("=" * 100)
 
 
 # 시작할 때마다 손패를 초기화한다.
@@ -229,9 +211,7 @@ def basic_setting():
 
 def deck_check():
     if len(Deck) == 0:
-
         print("덱을 셔플합니다.")
-
         for i in range(1, 53):
             Deck.append(i)
         random.shuffle(Deck)
@@ -249,7 +229,6 @@ def Winner(player, rival, prize):
     print(f"사용자 : {player}")
     print(f"딜러 : {rival}")
     if rival == "Bust":
-
         print("사용자의 승리입니다.")
         win_game += 1
         if player == 21:
@@ -257,10 +236,8 @@ def Winner(player, rival, prize):
         else:
             user.chips += winning_prize
     elif player == "Bust":
-
         print("딜러의 승리입니다.")
     elif player >= rival:
-
         print("사용자의 승리입니다.")
         win_game += 1
         if player == 21:
@@ -268,74 +245,33 @@ def Winner(player, rival, prize):
         else:
             user.chips += winning_prize
     else:
-
         print("딜러의 승리입니다.")
-
     winning_rate = int(win_game / played_game * 100)
     print(f"게임 횟수 : {played_game} / 승리 횟수 : {win_game} / 승률 : {winning_rate}%")
     print(f"남은 칩은 {user.chips}개입니다.")
     if user.chips == 0:
-
         print("안녕히 가십시오.")
         introduction()
 
-
 # 칩에 따라 다른 반응이 나온다.
-
 
 def farewell_greeting(chips, winning_rate):
     if chips > 2000:
-
-        print("=" * 100)
-        print("{0: >50}".format("이런 얘기를 꺼내게 되서 안타깝습니다만"))
-        print("=" * 100)
-
-        print("=" * 100)
-        print("{0: >50}".format("앞으로 더 이상 저희 카지노에 입장하실 수 없습니다."))
-        print("=" * 100)
-
-        print("=" * 100)
-        print("{0: >50}".format("무슨 뜻인지 충분히 이해하셨을 거라 생각합니다."))
-        print("=" * 100)
-
+        log("{0: >50}".format("이런 얘기를 꺼내게 되서 안타깝습니다만"))
+        log("{0: >50}".format("앞으로 더 이상 저희 카지노에 입장하실 수 없습니다."))
+        log("{0: >50}".format("무슨 뜻인지 충분히 이해하셨을 거라 생각합니다."))
     elif chips > 1000:
-
-        print("=" * 100)
-        print("{0: >50}".format("제 눈을 믿을 수가 없군요."))
-        print("=" * 100)
-
-        print("=" * 100)
-        print("{0: >50}".format("손님이 세우신 업적으로 카지노가 들썩거리고 있습니다."))
-        print("=" * 100)
-
-        print("=" * 100)
-        print("{0: >50}".format("멋진 플레이를 보여주신 것에 대한 보답입니다."))
-        print("=" * 100)
-
-        print("=" * 100)
-        print("{0: >50}".format("빠른 시일 내에 다시 방문해주시기를 간절히 기도하겠습니다."))
-        print("=" * 100)
+        log("{0: >50}".format("제 눈을 믿을 수가 없군요."))
+        log("{0: >50}".format("손님이 세우신 업적으로 카지노가 들썩거리고 있습니다."))
+        log("{0: >50}".format("멋진 플레이를 보여주신 것에 대한 보답입니다."))
+        log("{0: >50}".format("빠른 시일 내에 다시 방문해주시기를 간절히 기도하겠습니다."))
     elif chips > 500:
+        log("{0: >50}".format("정말 놀랍군요."))
+        log("{0: >50}".format("행운의 여신의 사랑을 받고 계신 것 같습니다."))
+        log("{0: >50}".format("저희 카지노 측에서 준비한 소정의 선물입니다."))
+        log("{0: >50}".format("다음 번에도 또 찾아와주십시오."))
 
-        print("=" * 100)
-        print("{0: >50}".format("정말 놀랍군요."))
-        print("=" * 100)
-
-        print("=" * 100)
-        print("{0: >50}".format("행운의 여신의 사랑을 받고 계신 것 같습니다."))
-        print("=" * 100)
-
-        print("=" * 100)
-        print("{0: >50}".format("저희 카지노 측에서 준비한 소정의 선물입니다."))
-        print("=" * 100)
-
-        print("=" * 100)
-        print("{0: >50}".format("다음 번에도 또 찾아와주십시오."))
-        print("=" * 100)
-
-    print("=" * 100)
-    print("{0: >50}".format("즐거운 시간이 되셨기를 바랍니다."))
-    print("=" * 100)
+    log("{0: >50}".format("즐거운 시간이 되셨기를 바랍니다."))
 
 
 # 게임 진행
@@ -408,6 +344,6 @@ def Game():
 
 introduction()
 farewell_greeting(user.chips, winning_rate)
-print("=" * 100)
-print("{0: >50}".format("안녕히 가십시오."))
-print("=" * 100)
+
+log("{0: >50}".format("안녕히 가십시오."))
+
