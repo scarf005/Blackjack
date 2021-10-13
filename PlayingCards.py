@@ -1,42 +1,45 @@
-
-cards = {}
+cards = [""]
 
 # card[1 ~ 13] 스페이드 카드
-number = 1
-cards[1] = "Spade A"
-for Spade in range(2, 11): 
-    number += 1
-    cards[Spade] = "Spade " + str(number)
-cards[11] = "Spade J"
-cards[12] = "Spade Q"
-cards[13] = "Spade K"
+cards.append("Spade A")
+for Spade in range(2, 11):
+    cards.append("Spade " + str(Spade))
+cards.append("Spade J")
+cards.append("Spade Q")
+cards.append("Spade K")
+# A, 2 ~ 10, J, Q, K
 
 # card[14 ~ 26] 다이아몬드 카드
 number = 1
-cards[14] = "Diamond A"
+cards.append("Diamond A")
 for Diamond in range(15, 24):
     number += 1
-    cards[Diamond] = "Diamond " + str(number)
-cards[24] = "Diamond J"
-cards[25] = "Diamond Q"
-cards[26] = "Diamond K"
+    cards.append("Diamond " + str(number))
+cards.append("Diamond J")
+cards.append("Diamond Q")
+cards.append("Diamond K")
 
 # card[27 ~ 39] 하트 카드
 number = 1
-cards[27] = "Heart A"
+cards.append("Heart A")
 for Heart in range(28, 37):
     number += 1
-    cards[Heart] = "Heart " + str(number)
-cards[37] = "Heart J"
-cards[38] = "Heart Q"
-cards[39] = "Heart K"
+    cards.append("Heart " + str(number))
+cards.append("Heart J")
+cards.append("Heart Q")
+cards.append("Heart K")
 
 # card[40 ~ 52] 하트 카드
 number = 1
-cards[40] = "Club A"
+cards.append("Club A")
 for Club in range(41, 50):
     number += 1
-    cards[Club] = "Club " + str(number)
-cards[50] = "Club J"
-cards[51] = "Club Q"
-cards[52] = "Club K"
+    cards.append("Club " + str(number))
+cards.append("Club J")
+cards.append("Club Q")
+cards.append("Club K")
+
+if __name__ == "__main__":
+    from pprint import pprint
+
+    pprint(cards)
