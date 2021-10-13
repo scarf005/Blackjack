@@ -4,10 +4,10 @@
 27 ~ 39: 하트
 40 ~ 52: 클럽
 """
-cards = [""]
+Cards = list[str]
+cards: Cards = []
 
 values: list[str | int] = ["A", *range(2, 10 + 1), "J", "Q", "K"]
-
 
 def append_symbol_set_to_cards(symbol: str):
     for value in values:

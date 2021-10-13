@@ -1,7 +1,16 @@
 import random
 
-from PlayingCards import cards
+from PlayingCards import Cards, cards
 
+
+# 카드 더미가 0이 되면 다시 섞어준다.
+def shuffle_deck() -> Cards:
+    deck = cards.copy()
+    random.shuffle(deck)
+    return deck
+
+
+Deck = shuffle_deck()
 
 # 클래스로 플레이어와 딜러의 클래스 변수와 메소드를 할당
 # 메소드에는 카드를 뽑고, A를 계산하고, bust를 체크하고, 히트나 스테이를 결정하는 기능을 할당
@@ -11,7 +20,7 @@ class Player:
         self.type = type
         self.chips = chips
         self.hand = hand
-        self.card_sum = card_sum
+        self.card_sum: int = card_sum
         self.card_number = card_number
 
     # 시작할 때마다 손패를 초기화한다.
@@ -20,9 +29,13 @@ class Player:
         self.card_sum = 0
         self.card_number = 0
 
+    def cardcal(self, cardlast):
+        raise NotImplementedError
+
     def draw(self, *, say_drawn=False):
+        global Deck
         self.card_number += 1
-        draw = cards[Deck[0]]
+        draw = Deck.pop()
         if say_drawn:
             print(f"뽑은 카드 : {draw}")
         print(f"{self.name}의 {self.card_number}번째 카드 : {draw}")
@@ -30,13 +43,14 @@ class Player:
         self.card_sum += self.cardcal(draw[-1])
         print(f"{self.name}의 현재 카드 : {self.hand}")
         print(f"{self.name}의 현재 합 : {self.card_sum}")
-        del Deck[0]
         if self.card_sum == 21:
             print(f"{self.name}님이 [Blackjack]을 완성했습니다.")
         elif self.card_sum > 21:
             print(f"{self.name}님이 [Bust]되었습니다.")
             self.card_sum = "Bust"
-        deck_check()
+        if not len(Deck):
+            print("덱을 셔플합니다.")
+            Deck = shuffle_deck()
 
 
 class UserPlayer(Player):
@@ -100,8 +114,6 @@ dealer = DealerPlayer()
 
 # 덱은 52의 범위를 가진 리스트를 섞어서 만든다. 0부터 지워가면서 묘듈에서부터 해당 위치와 동일한 위치의 카드를 뽑아낸다.
 
-Deck = [i for i in range(1, 53)]
-random.shuffle(Deck)
 
 # 게임 횟수, 승리횟수는 함수에서 global로 전역함수를 만든다.
 wanna_play = True
@@ -136,6 +148,7 @@ def introduction():
         else:
             break
 
+
 def set_user_chips():
     if user.chips == 0:
         log("기본칩 50개를 증정합니다.")
@@ -145,17 +158,18 @@ def set_user_chips():
         log(f"남은 칩은 {user.chips}개 입니다.")
     log("게임을 시작합니다.")
 
+
 def how_to_play():
     for string in [
-                "블랙잭은 21에 가까운 수를 만들면 이기는 게임입니다.",
-                "J, Q, K는 10으로, A는 1과 11 어느쪽으로든 계산할 수 있습니다.",
-                "시작하며 카드 두장을 기본으로 지급받습니다.",
-                "카드를 더 뽑으면 Hit, 뽑지 않고 차례를 마치면 Stay.",
-                "숫자의 합이 21을 넘어가면 Bust로 즉시 패배합니다.",
-                "플레이어의 차례가 끝나면 상대의 차례입니다.",
-                "딜러는 숫자의 합이 17 이상이 될때까지 무조건 히트를 합니다.",
-                "상대보다 합이 높거나, 상대가 Bust되면 플레이어의 승리입니다.",
-            ]:
+        "블랙잭은 21에 가까운 수를 만들면 이기는 게임입니다.",
+        "J, Q, K는 10으로, A는 1과 11 어느쪽으로든 계산할 수 있습니다.",
+        "시작하며 카드 두장을 기본으로 지급받습니다.",
+        "카드를 더 뽑으면 Hit, 뽑지 않고 차례를 마치면 Stay.",
+        "숫자의 합이 21을 넘어가면 Bust로 즉시 패배합니다.",
+        "플레이어의 차례가 끝나면 상대의 차례입니다.",
+        "딜러는 숫자의 합이 17 이상이 될때까지 무조건 히트를 합니다.",
+        "상대보다 합이 높거나, 상대가 Bust되면 플레이어의 승리입니다.",
+    ]:
         pad_print(string)
 
 
@@ -167,15 +181,6 @@ def log(string: str):
 
 def pad_print(string: str):
     print(f"{string:>30}")
-
-
-# 카드 더미가 0이 되면 다시 섞어준다.
-def deck_check():
-    if len(Deck) == 0:
-        print("덱을 셔플합니다.")
-        for i in range(1, 53):
-            Deck.append(i)
-        random.shuffle(Deck)
 
 
 # 카드의 합을 파라미터로 받아 승패를 계산하고 칩을 처리한다.
@@ -242,13 +247,17 @@ def game():
     played_game += 1
 
     while True:
+        print(f"{len(Deck)=}")  # DEBUG
         print(f"남은 칩 : {user.chips}")
-        bet_chips = int(input("베팅 금액을 정해주십시오.\n"))
-        if not 0 < bet_chips <= user.chips:
-            print("칩이 부족하거나 잘못 입력하셨습니다.")
-            continue
-        print(f"{bet_chips}개 베팅하셨습니다.")
-        user.chips -= bet_chips
+        try:
+            bet_chips = int(input("베팅 금액을 정해주십시오.\n"))
+            if 0 < bet_chips <= user.chips:
+                print(f"{bet_chips}개 베팅하셨습니다.")
+                user.chips -= bet_chips
+            else:
+                print("칩이 부족합니다.")
+        except:
+            print("잘못 입력하셨습니다")
         break
 
     user.draw()
