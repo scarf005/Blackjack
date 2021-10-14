@@ -15,16 +15,13 @@ Deck = shuffle_deck()
 
 
 class Player:
-    def __init__(self, name, type, chips, hand, card_sum):
+    def __init__(self, name):
         self.name = name
-        self.type = type
-        self.chips = chips
-        self.hand = hand
-        self.card_sum: int = card_sum
+        self.chips = 0
+        self.reset_hands()
 
-    # 시작할 때마다 손패를 초기화한다.
-    def basic_setting(self):
-        del self.hand[:]
+    def reset_hands(self):
+        self.hand: list[str] = []
         self.card_sum = 0
 
     def cardcal(self, cardlast):
@@ -36,10 +33,12 @@ class Player:
         global Deck
         for _ in range(amount):
             drawn_card = Deck.pop()
+            print(f"{self.name}: {drawn_card}을 뽑았습니다")
             self.hand.append(drawn_card)
             self.card_sum += self.cardcal(drawn_card)
-        print(f"{self.name}의 현재 카드 : {self.hand}")
-        print(f"{self.name}의 현재 합 : {self.card_sum}")
+
+        print(f"{self.name}: {self.card_sum}점, 손패{self.hand}")
+
         self.check_bust()
         if not len(Deck):
             print("덱을 셔플합니다.")
@@ -55,7 +54,7 @@ class Player:
 
 class UserPlayer(Player):
     def __init__(self):
-        Player.__init__(self, "사용자", "User", 0, [], 0)
+        super().__init__("사용자")
         self.wins = 0
         self.plays = 0
 
@@ -117,7 +116,7 @@ class UserPlayer(Player):
 
 class DealerPlayer(Player):
     def __init__(self):
-        Player.__init__(self, "딜러", "Dealer", 0, [], 0)
+        super().__init__("딜러")
 
     def cardcal(self, cardlast):
         if "A" in cardlast:

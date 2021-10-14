@@ -20,8 +20,8 @@ def winner(player, rival, prize):
 # 게임 진행
 def game():
     user.set_chips()
-    user.basic_setting()
-    dealer.basic_setting()
+    user.reset_hands()
+    dealer.reset_hands()
     user.plays += 1
 
     bets = user.bet_chips()
