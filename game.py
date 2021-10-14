@@ -29,8 +29,8 @@ def game():
     user.draw(2)
 
     while (
-        user.card_sum != "Bust"
-        and dealer.card_sum != "Bust"
+        not user.bust
+        and not dealer.bust
         and user.card_sum != 21
     ):
         choice = user.hit_or_stay()
@@ -39,17 +39,9 @@ def game():
             continue
         else:
             break
-    if user.card_sum != "Bust":
+    if not user.bust:
         dealer.draw(2)
-        while dealer.card_sum != "Bust":
-            choice = dealer.hit_or_stay()
-            if choice == "Hit":
-                print("Hit.")
-                dealer.draw()
-                continue
-            else:
-                print("Stay.")
-                break
+        dealer.hit_or_stay()
 
     winner(user.card_sum, dealer.card_sum, bets)
     print(user)

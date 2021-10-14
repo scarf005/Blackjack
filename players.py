@@ -23,6 +23,7 @@ class Player:
     def reset_hands(self):
         self.hand: list[str] = []
         self.card_sum = 0
+        self.bust = False
 
     def cardcal(self, cardlast):
         if any(symbol in cardlast for symbol in "0JQK"):
@@ -33,11 +34,11 @@ class Player:
         global Deck
         for _ in range(amount):
             drawn_card = Deck.pop()
-            print(f"{self.name}: {drawn_card}을 뽑았습니다")
+            self.say(f"{drawn_card}을 뽑았습니다")
             self.hand.append(drawn_card)
             self.card_sum += self.cardcal(drawn_card)
 
-        print(f"{self.name}: {self.card_sum}점, 손패{self.hand}")
+        self.say(f"{self.card_sum}점, 손패{self.hand}")
 
         self.check_bust()
         if not len(Deck):
@@ -46,11 +47,13 @@ class Player:
 
     def check_bust(self):
         if self.card_sum == 21:
-            print(f"{self.name}님이 [Blackjack]을 완성했습니다.")
+            self.say(f"블랙잭을 완성했습니다!")
         elif self.card_sum > 21:
-            print(f"{self.name}님이 [Bust]되었습니다.")
-            self.card_sum = "Bust"
+            self.say(f"버스트되었습니다.")
+            self.bust = True
 
+    def say(self, string:str):
+        print(f"{self.name}: {string}")
 
 class UserPlayer(Player):
     def __init__(self):
@@ -109,7 +112,7 @@ class UserPlayer(Player):
             f"남은 칩 : {self.chips}\n베팅 금액을 정해주십시오.\n",
             self.chips,
         )
-        print(f"{result}개 베팅하셨습니다.")
+        self.say(f"{result}개 베팅하셨습니다.")
         self.chips -= result
         return result
 
@@ -124,4 +127,7 @@ class DealerPlayer(Player):
         return super().cardcal(cardlast)
 
     def hit_or_stay(self):
-        return ["Hit", "Stay"][self.card_sum < 17]
+        while self.card_sum < 17:
+            self.say("힛.")
+            self.draw()
+        self.say("스테이.")
