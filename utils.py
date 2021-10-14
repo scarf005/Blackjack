@@ -1,3 +1,33 @@
+try:
+    import msvcrt
+
+    def getch():
+        return msvcrt.getch()
+
+
+except ImportError:
+    import sys, tty, termios
+
+    def getch():
+        fd = sys.stdin.fileno()
+        original_attributes = termios.tcgetattr(fd)
+        try:
+            tty.setraw(sys.stdin.fileno())
+            ch = sys.stdin.read(1)
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, original_attributes)
+        return ch
+
+
+def get_int_choice(action_1: str, action_2: str):
+    while True:
+        print(f"1: {action_1} 2: {action_2}")
+        try:
+            return int(getch())
+        except:
+            print("잘못 입력하셨습니다. 1과 2 중 하나를 입력해주십시오.")
+
+
 def how_to_play():
     for string in [
         "블랙잭은 21에 가까운 수를 만들면 이기는 게임입니다.",
@@ -20,7 +50,6 @@ def log(string: str):
 
 def pad_print(string: str):
     print(f"{string:>30}")
-
 
 
 # 칩에 따라 다른 반응이 나온다.
