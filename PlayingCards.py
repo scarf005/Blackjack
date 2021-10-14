@@ -12,7 +12,7 @@ def create_symbol_set(symbol: str):
     return [f"{symbol} {value}" for value in values]
 
 cards: Cards = []
-for symbol in ["Spade", "Diamond", "Heart", "Club"]:
+for symbol in ["스페이드", "다이아몬드", "하트", "클로버"]:
     cards.extend(create_symbol_set(symbol))
 
 
