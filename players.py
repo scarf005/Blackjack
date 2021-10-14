@@ -1,14 +1,18 @@
 from utils import log, choose
 from playingcards import cards, Cards
 from random import shuffle
+
 # 카드 더미가 0이 되면 다시 섞어준다.
+
 
 def shuffle_deck() -> Cards:
     deck = cards.copy()
     shuffle(deck)
     return deck
 
+
 Deck = shuffle_deck()
+
 
 class Player:
     def __init__(self, name, type, chips, hand, card_sum, card_number):
@@ -53,9 +57,12 @@ class Player:
             print(f"{self.name}님이 [Bust]되었습니다.")
             self.card_sum = "Bust"
 
+
 class UserPlayer(Player):
     def __init__(self):
         Player.__init__(self, "사용자", "User", 0, [], 0, 0)
+        self.wins = 0
+        self.plays = 0
 
     def set_chips(self):
         if self.chips == 0:
@@ -66,6 +73,18 @@ class UserPlayer(Player):
             log(f"남은 칩은 {self.chips}개 입니다.")
         log("게임을 시작합니다.")
 
+    @property
+    def win_rate(self):
+        return int(self.wins / self.plays * 100)
+
+    def __str__(self):
+        return (
+            f"게임 횟수 : {self.plays} / "
+            f"승리 횟수 : {self.wins} / "
+            f"승률 : {self.win_rate}%\n"
+            f"남은 칩은 {self.chips}개입니다."
+        )
+
     def cardcal(self, cardlast):
         if cardlast == "A":
             return int(choose("1", "11"))
@@ -74,6 +93,14 @@ class UserPlayer(Player):
     def hit_or_stay(self):
         return choose("Hit", "Stay")
 
+    def give_prize(self, prize: int):
+        print("사용자의 승리입니다.")
+        self.wins += 1
+        if self.card_sum == 21:
+            self.chips += prize * 2
+        else:
+            self.chips += int(prize * 1.5)
+
     def bet_chips(self):
         def get_int_input(ask: str, max: int):
             while True:
@@ -81,7 +108,6 @@ class UserPlayer(Player):
                     result = int(input(ask))
                     if 0 < result <= max:
                         return result
-
                     print("칩이 부족합니다.")
                 except:
                     print("잘못 입력하셨습니다")

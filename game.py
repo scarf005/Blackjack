@@ -5,46 +5,24 @@ from players import UserPlayer, DealerPlayer, Deck
 user = UserPlayer()
 dealer = DealerPlayer()
 
-# 게임 횟수, 승리횟수는 함수에서 global로 전역함수를 만든다.
-played_game = 0
-win_game = 0
-
-
 def winner(player, rival, prize):
-    global played_game
-    global win_game
-
     print(f"사용자 : {player}")
     print(f"딜러 : {rival}")
     if rival == "Bust":
-        print("사용자의 승리입니다.")
-        give_prize(player, prize)
+        user.give_prize(prize)
     elif player == "Bust":
         print("딜러의 승리입니다.")
     elif player >= rival:
-        print("사용자의 승리입니다.")
-        give_prize(player, prize)
+        user.give_prize(prize)
     else:
         print("딜러의 승리입니다.")
 
-
-def give_prize(player_num: int, prize: int):
-    global win_game
-    win_game += 1
-    if player_num == 21:
-        user.chips += prize * 2
-    else:
-        user.chips += int(prize * 1.5)
-
-
 # 게임 진행
 def game():
-    global played_game
-    global win_game
     user.set_chips()
     user.basic_setting()
     dealer.basic_setting()
-    played_game += 1
+    user.plays += 1
 
     bets = user.bet_chips()
 
@@ -76,9 +54,7 @@ def game():
                 break
 
     winner(user.card_sum, dealer.card_sum, bets)
-    winning_rate = int(win_game / played_game * 100)
-    print(f"게임 횟수 : {played_game} / 승리 횟수 : {win_game} / 승률 : {winning_rate}%")
-    print(f"남은 칩은 {user.chips}개입니다.")
+    print(user)
 
     if user.chips == 0:
         print("안녕히 가십시오.")
