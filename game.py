@@ -1,15 +1,3 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    play_game.py                                            :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: youkim < youkim@student.42seoul.kr>        +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2021/10/14 13:24:13 by youkim            #+#    #+#              #
-#    Updated: 2021/10/14 13:24:13 by youkim           ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
-
 from playingcards import Cards, cards
 from utils import choose, log, how_to_play, farewell_greeting
 from players import HumanPlayer, DealerPlayer, Deck

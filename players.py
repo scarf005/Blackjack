@@ -1,4 +1,4 @@
-from utils import log, choose
+from utils import log, choose, BLACKJACK
 from playingcards import cards, Cards
 from random import shuffle
 
@@ -58,11 +58,11 @@ class Player:
 
     @property
     def blackjack(self):
-        return self.card_sum == 21
+        return self.card_sum == BLACKJACK
 
     @property
     def bust(self):
-        return self.card_sum > 21
+        return self.card_sum > BLACKJACK
 
     def show_hands(self):
         self.say(f"{self.card_sum}점, 손패{self.hand}")
@@ -127,7 +127,7 @@ class HumanPlayer(Player):
     def win(self):
         super().win()
         self.wins += 1
-        if self.card_sum == 21:
+        if self.card_sum == BLACKJACK:
             self.chips += self.bets * 2
         else:
             self.chips += int(self.bets * 1.5)

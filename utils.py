@@ -1,6 +1,8 @@
 from typing import Optional
 import sys
 
+BLACKJACK = 21
+_LINE_WIDTH = 60
 
 if sys.platform == "win32":
     import msvcrt
@@ -45,12 +47,12 @@ def choose(action_1: str, action_2: str, other: Optional[str] = None):
 
 
 def log(line: str, *lines: str):
-    print("=" * 60)
+    print("=" * _LINE_WIDTH)
 
     for line in [line, *lines]:
         pad_print(line)
 
-    print("=" * 60)
+    print("=" * _LINE_WIDTH)
 
 
 def pad_print(string: str):
