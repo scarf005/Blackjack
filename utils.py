@@ -1,17 +1,15 @@
 from typing import Optional
+import sys
 
 
-try:
+if sys.platform == "win32":
     import msvcrt
+    getch = lambda: msvcrt.getch()
 
-    def getch():
-        return msvcrt.getch()
+else:
+    import tty, termios
 
-
-except ImportError:
-    import sys, tty, termios
-
-    def getch():
+    def _getch():
         fd = sys.stdin.fileno()
         original_attributes = termios.tcgetattr(fd)
         try:
@@ -20,6 +18,8 @@ except ImportError:
         finally:
             termios.tcsetattr(fd, termios.TCSADRAIN, original_attributes)
         return ch
+
+    getch = _getch
 
 
 def choose(action_1: str, action_2: str, other: Optional[str] = None):
@@ -44,8 +44,17 @@ def choose(action_1: str, action_2: str, other: Optional[str] = None):
     return choose_two(action_1, action_2)
 
 
-if __name__ == "__main__":
-    print(choose("a", "b", "c"))
+def log(line: str, *lines: str):
+    print("=" * 60)
+
+    for line in [line, *lines]:
+        pad_print(line)
+
+    print("=" * 60)
+
+
+def pad_print(string: str):
+    print(f"{string:>30}")
 
 
 def how_to_play():
@@ -61,20 +70,6 @@ def how_to_play():
     )
 
 
-def log(line: str, *lines: str):
-    print("=" * 60)
-
-    for line in [line, *lines]:
-        pad_print(line)
-
-    print("=" * 60)
-
-
-def pad_print(string: str):
-    print(f"{string:>30}")
-
-
-# 칩에 따라 다른 반응이 나온다.
 def farewell_greeting(chips):
     if chips > 2000:
         log(
