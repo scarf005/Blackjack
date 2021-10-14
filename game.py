@@ -1,7 +1,7 @@
 import random
 
 from playingcards import Cards, cards
-from utils import log, how_to_play, farewell_greeting
+from utils import choose, log, how_to_play, farewell_greeting
 
 # 카드 더미가 0이 되면 다시 섞어준다.
 def shuffle_deck() -> Cards:
@@ -30,7 +30,9 @@ class Player:
         self.card_number = 0
 
     def cardcal(self, cardlast):
-        raise NotImplementedError
+        if cardlast in "0JQK":
+            return 10
+        return int(cardlast)
 
     def draw(self, *, say_drawn=False):
         global Deck
@@ -43,45 +45,40 @@ class Player:
         self.card_sum += self.cardcal(draw[-1])
         print(f"{self.name}의 현재 카드 : {self.hand}")
         print(f"{self.name}의 현재 합 : {self.card_sum}")
+        self.check_bust()
+        if not len(Deck):
+            print("덱을 셔플합니다.")
+            Deck = shuffle_deck()
+
+    def check_bust(self):
         if self.card_sum == 21:
             print(f"{self.name}님이 [Blackjack]을 완성했습니다.")
         elif self.card_sum > 21:
             print(f"{self.name}님이 [Bust]되었습니다.")
             self.card_sum = "Bust"
-        if not len(Deck):
-            print("덱을 셔플합니다.")
-            Deck = shuffle_deck()
 
 
 class UserPlayer(Player):
     def __init__(self):
         Player.__init__(self, "사용자", "User", 0, [], 0, 0)
 
+    def set_chips(self):
+        if self.chips == 0:
+            log("기본칩 50개를 증정합니다.")
+            self.chips = 50
+        else:
+            log("한 번 오신 적이 있으시군요.")
+            log(f"남은 칩은 {self.chips}개 입니다.")
+        log("게임을 시작합니다.")
+
     def cardcal(self, cardlast):
         if cardlast == "A":
-            while True:
-                try:
-                    A = int(input("1과 11중 무엇으로 하시겠습니까?"))
-                    if A == 1 or A == 11:
-                        return A
-                except:
-                    print("잘못된 값을 입력하셨습니다.")
-                    continue
-        elif cardlast in "0JQK":
-            return 10
+            return int(choose("1", "11"))
+        return super().cardcal(cardlast)
 
-        return int(cardlast[-1])
 
     def hit_or_stay(self):
-        while True:
-            choice = input("Hit or Stay? ").lower()
-            if choice in ["hit", "h"]:
-                return "Hit"
-            elif choice in ["stay", "s"]:
-                return "Stay"
-            else:
-                print("잘못 입력하셨습니다. Hit 나 Stay 중 하나를 입력해주십시오.")
-                continue
+        return choose("Hit", "Stay")
 
 
 class DealerPlayer(Player):
@@ -93,70 +90,35 @@ class DealerPlayer(Player):
 
     def cardcal(self, cardlast):
         if cardlast == "A":
-            if self.card_sum > 10:
-                return 1
-            else:
-                return 11
-        elif cardlast in "0JQK":
-            return 10
-        else:
-            return int(cardlast[-1])
+            return [1, 11][self.card_sum > 10]
+        return super().cardcal(cardlast)
 
     def hit_or_stay(self):
-        if self.card_sum < 17:
-            return "Hit"
-        else:
-            return "Stay"
-
+        return ["Hit", "Stay"][self.card_sum < 17]
 
 user = UserPlayer()
 dealer = DealerPlayer()
 
-# 덱은 52의 범위를 가진 리스트를 섞어서 만든다. 0부터 지워가면서 묘듈에서부터 해당 위치와 동일한 위치의 카드를 뽑아낸다.
-
-
 # 게임 횟수, 승리횟수는 함수에서 global로 전역함수를 만든다.
-wanna_play = True
 played_game = 0
 win_game = 0
 winning_rate = 0
 
-
 def introduction():
-    global wanna_play
+
     global played_game
     global win_game
 
     while True:
-        if wanna_play == False:
-            break
         log("블랙잭에 오신 것을 환영합니다.")
-        print("1. 게임 시작")
-        print("2. 룰 설명")
-        print("3. 나가기")
-
-        try:
-            select = int(input())
-        except:
-            select = 3
-
-        if select == 1:
-            set_user_chips()
+        choice = choose("게임 시작", "룰 설명", "나가기")
+        if choice == "게임 시작":
+            user.set_chips()
             game()
-        elif select == 2:
+        elif choice == "룰 설명":
             how_to_play()
         else:
             break
-
-
-def set_user_chips():
-    if user.chips == 0:
-        log("기본칩 50개를 증정합니다.")
-        user.chips = 50
-    else:
-        log("한 번 오신 적이 있으시군요.")
-        log(f"남은 칩은 {user.chips}개 입니다.")
-    log("게임을 시작합니다.")
 
 # 카드의 합을 파라미터로 받아 승패를 계산하고 칩을 처리한다.
 def winner(player, rival, prize):
@@ -192,6 +154,7 @@ def winner(player, rival, prize):
         print("안녕히 가십시오.")
         introduction()
 
+
 # 게임 진행
 def game():
     global played_game
@@ -200,7 +163,6 @@ def game():
     dealer.basic_setting()
     played_game += 1
 
-    bet_chips = 1
     while True:
         print(f"{len(Deck)=}")  # DEBUG
         print(f"남은 칩 : {user.chips}")
@@ -209,11 +171,11 @@ def game():
             if 0 < bet_chips <= user.chips:
                 print(f"{bet_chips}개 베팅하셨습니다.")
                 user.chips -= bet_chips
+                break
             else:
                 print("칩이 부족합니다.")
         except:
             print("잘못 입력하셨습니다")
-        break
 
     user.draw()
     user.draw()
@@ -244,10 +206,9 @@ def game():
     winner(user.card_sum, dealer.card_sum, bet_chips)
 
     # 값을 비교하여 승자를 결정한 후 다시 할 것인지 정한다.
-    if wanna_play:
-        retry = input("다시 하시려면 Y를 입력해주세요. ").lower()
-        if "y" in retry:
-            game()
+    if choose("다시 하기", "종료") == "다시 하기":
+        game()
+    else:
         introduction()
 
 
