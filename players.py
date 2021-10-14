@@ -23,7 +23,6 @@ class Player:
     def reset_hands(self):
         self.hand: list[str] = []
         self.card_sum = 0
-        self.bust = False
 
     def cardcal(self, cardlast):
         if any(symbol in cardlast for symbol in "0JQK"):
@@ -48,12 +47,22 @@ class Player:
     def check_bust(self):
         if self.card_sum == 21:
             self.say(f"블랙잭을 완성했습니다!")
-        elif self.card_sum > 21:
+        elif self.bust:
             self.say(f"버스트되었습니다.")
-            self.bust = True
 
-    def say(self, string:str):
-        print(f"{self.name}: {string}")
+    @property
+    def bust(self):
+        return self.card_sum > 21
+
+    def say(self, content):
+        print(f"{self.name}: {content}")
+
+    def win(self):
+        print(f"{self.name}의 승리입니다")
+
+    def play_turn(self):
+        raise NotImplementedError
+
 
 class UserPlayer(Player):
     def __init__(self):
@@ -83,14 +92,21 @@ class UserPlayer(Player):
 
     def cardcal(self, cardlast):
         if "A" in cardlast:
+            print(f"{cardlast}는 1점 또는 11점으로 적용할 수 있습니다.")
             return int(choose("1", "11"))
         return super().cardcal(cardlast)
 
-    def hit_or_stay(self):
-        return choose("Hit", "Stay")
+    def play_turn(self):
+        self.draw(2)
+        while not self.bust:
+            if choose("힛", "스테이") == "스테이":
+                break
+            self.draw()
 
-    def give_prize(self, prize: int):
-        print("사용자의 승리입니다.")
+
+
+    def win(self, prize: int):
+        super().win()
         self.wins += 1
         if self.card_sum == 21:
             self.chips += prize * 2
@@ -126,7 +142,8 @@ class DealerPlayer(Player):
             return [1, 11][self.card_sum > 10]
         return super().cardcal(cardlast)
 
-    def hit_or_stay(self):
+    def play_turn(self):
+        self.draw(2)
         while self.card_sum < 17:
             self.say("힛.")
             self.draw()
