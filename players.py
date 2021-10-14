@@ -15,34 +15,29 @@ Deck = shuffle_deck()
 
 
 class Player:
-    def __init__(self, name, type, chips, hand, card_sum, card_number):
+    def __init__(self, name, type, chips, hand, card_sum):
         self.name = name
         self.type = type
         self.chips = chips
         self.hand = hand
         self.card_sum: int = card_sum
-        self.card_number = card_number
 
     # 시작할 때마다 손패를 초기화한다.
     def basic_setting(self):
         del self.hand[:]
         self.card_sum = 0
-        self.card_number = 0
 
     def cardcal(self, cardlast):
-        if cardlast in "0JQK":
+        if any(symbol in cardlast for symbol in "0JQK"):
             return 10
-        return int(cardlast)
+        return int(cardlast.split()[-1])
 
-    def draw(self, *, say_drawn=False):
+    def draw(self, amount=1):
         global Deck
-        self.card_number += 1
-        draw = Deck.pop()
-        if say_drawn:
-            print(f"뽑은 카드 : {draw}")
-        print(f"{self.name}의 {self.card_number}번째 카드 : {draw}")
-        self.hand.append(draw)
-        self.card_sum += self.cardcal(draw[-1])
+        for _ in range(amount):
+            drawn_card = Deck.pop()
+            self.hand.append(drawn_card)
+            self.card_sum += self.cardcal(drawn_card)
         print(f"{self.name}의 현재 카드 : {self.hand}")
         print(f"{self.name}의 현재 합 : {self.card_sum}")
         self.check_bust()
@@ -60,7 +55,7 @@ class Player:
 
 class UserPlayer(Player):
     def __init__(self):
-        Player.__init__(self, "사용자", "User", 0, [], 0, 0)
+        Player.__init__(self, "사용자", "User", 0, [], 0)
         self.wins = 0
         self.plays = 0
 
@@ -69,8 +64,7 @@ class UserPlayer(Player):
             log("기본칩 50개를 증정합니다.")
             self.chips = 50
         else:
-            log("한 번 오신 적이 있으시군요.")
-            log(f"남은 칩은 {self.chips}개 입니다.")
+            log("한 번 오신 적이 있으시군요.", f"남은 칩은 {self.chips}개 입니다.")
         log("게임을 시작합니다.")
 
     @property
@@ -86,7 +80,7 @@ class UserPlayer(Player):
         )
 
     def cardcal(self, cardlast):
-        if cardlast == "A":
+        if "A" in cardlast:
             return int(choose("1", "11"))
         return super().cardcal(cardlast)
 
@@ -123,13 +117,10 @@ class UserPlayer(Player):
 
 class DealerPlayer(Player):
     def __init__(self):
-        Player.__init__(self, "딜러", "Dealer", 0, [], 0, 0)
-
-    def draw(self):
-        super().draw(say_drawn=True)
+        Player.__init__(self, "딜러", "Dealer", 0, [], 0)
 
     def cardcal(self, cardlast):
-        if cardlast == "A":
+        if "A" in cardlast:
             return [1, 11][self.card_sum > 10]
         return super().cardcal(cardlast)
 

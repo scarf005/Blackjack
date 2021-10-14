@@ -26,8 +26,7 @@ def game():
 
     bets = user.bet_chips()
 
-    user.draw()
-    user.draw()
+    user.draw(2)
 
     while (
         user.card_sum != "Bust"
@@ -41,8 +40,7 @@ def game():
         else:
             break
     if user.card_sum != "Bust":
-        dealer.draw()
-        dealer.draw()
+        dealer.draw(2)
         while dealer.card_sum != "Bust":
             choice = dealer.hit_or_stay()
             if choice == "Hit":
