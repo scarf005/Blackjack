@@ -10,6 +10,7 @@ played_game = 0
 win_game = 0
 winning_rate = 0
 
+
 def introduction():
     global played_game
     global win_game
@@ -17,7 +18,6 @@ def introduction():
     log("블랙잭에 오신 것을 환영합니다.")
     choice = choose("게임 시작", "룰 설명", "나가기")
     if choice == "게임 시작":
-        user.set_chips()
         game()
     elif choice == "룰 설명":
         how_to_play()
@@ -62,23 +62,12 @@ def winner(player, rival, prize):
 def game():
     global played_game
     global win_game
+    user.set_chips()
     user.basic_setting()
     dealer.basic_setting()
     played_game += 1
 
-    while True:
-        print(f"{len(Deck)=}")  # DEBUG
-        print(f"남은 칩 : {user.chips}")
-        try:
-            bet_chips = int(input("베팅 금액을 정해주십시오.\n"))
-            if 0 < bet_chips <= user.chips:
-                print(f"{bet_chips}개 베팅하셨습니다.")
-                user.chips -= bet_chips
-                break
-            else:
-                print("칩이 부족합니다.")
-        except:
-            print("잘못 입력하셨습니다")
+    bets = user.bet_chips()
 
     user.draw()
     user.draw()
@@ -106,7 +95,7 @@ def game():
             else:
                 print("Stay.")
                 break
-    winner(user.card_sum, dealer.card_sum, bet_chips)
+    winner(user.card_sum, dealer.card_sum, bets)
 
     # 값을 비교하여 승자를 결정한 후 다시 할 것인지 정한다.
     if choose("다시 하기", "종료") == "다시 하기":
@@ -114,7 +103,5 @@ def game():
     else:
         introduction()
 
-
 introduction()
 farewell_greeting(user.chips)
-log("안녕히 가십시오.")

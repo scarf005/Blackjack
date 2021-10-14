@@ -97,3 +97,4 @@ def farewell_greeting(chips):
             "다음 번에도 또 찾아와주십시오.",
         )
     log("즐거운 시간이 되셨기를 바랍니다.")
+    log("안녕히 가십시오.")

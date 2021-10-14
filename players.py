@@ -74,6 +74,26 @@ class UserPlayer(Player):
     def hit_or_stay(self):
         return choose("Hit", "Stay")
 
+    def bet_chips(self):
+        def get_int_input(ask: str, max: int):
+            while True:
+                try:
+                    result = int(input(ask))
+                    if 0 < result <= max:
+                        return result
+
+                    print("칩이 부족합니다.")
+                except:
+                    print("잘못 입력하셨습니다")
+
+        result = get_int_input(
+            f"남은 칩 : {self.chips}\n베팅 금액을 정해주십시오.\n",
+            self.chips,
+        )
+        print(f"{result}개 베팅하셨습니다.")
+        self.chips -= result
+        return result
+
 
 class DealerPlayer(Player):
     def __init__(self):
