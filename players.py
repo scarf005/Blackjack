@@ -5,7 +5,9 @@ from random import shuffle
 # 카드 더미가 0이 되면 다시 섞어준다.
 
 
-def shuffle_deck() -> Cards:
+def shuffle_deck(verbose=False) -> Cards:
+    if verbose:
+        print("덱을 셔플합니다.")
     deck = cards.copy()
     shuffle(deck)
     return deck
@@ -18,9 +20,9 @@ class Player:
     def __init__(self, name):
         self.name = name
         self.chips = 0
-        self.reset_hands()
+        self.prepare()
 
-    def reset_hands(self):
+    def prepare(self):
         self.hand: list[str] = []
         self.card_sum = 0
 
@@ -29,30 +31,41 @@ class Player:
             return 10
         return int(cardlast.split()[-1])
 
-    def draw(self, amount=1):
+    def get_cards_from_deck(self, amount=1):
         global Deck
-        for _ in range(amount):
-            drawn_card = Deck.pop()
-            self.say(f"{drawn_card}을 뽑았습니다")
-            self.hand.append(drawn_card)
-            self.card_sum += self.cardcal(drawn_card)
 
-        self.say(f"{self.card_sum}점, 손패{self.hand}")
-
-        self.check_bust()
+        result = [Deck.pop() for _ in range(amount)]
         if not len(Deck):
-            print("덱을 셔플합니다.")
-            Deck = shuffle_deck()
+            Deck = shuffle_deck(verbose=True)
 
-    def check_bust(self):
-        if self.card_sum == 21:
+        return result
+
+    def draw(self, amount=1):
+        drawn_cards = self.get_cards_from_deck(amount)
+
+        for card in drawn_cards:
+            self.say(f"{card}을 뽑았습니다")
+            self.hand.append(card)
+            self.card_sum += self.cardcal(card)
+
+        self.check_status()
+
+    def check_status(self):
+        if self.blackjack:
             self.say(f"블랙잭을 완성했습니다!")
         elif self.bust:
             self.say(f"버스트되었습니다.")
 
     @property
+    def blackjack(self):
+        return self.card_sum == 21
+
+    @property
     def bust(self):
         return self.card_sum > 21
+
+    def show_hands(self):
+        self.say(f"{self.card_sum}점, 손패{self.hand}")
 
     def say(self, content):
         print(f"{self.name}: {content}")
@@ -64,11 +77,12 @@ class Player:
         raise NotImplementedError
 
 
-class UserPlayer(Player):
+class HumanPlayer(Player):
     def __init__(self):
         super().__init__("사용자")
         self.wins = 0
         self.plays = 0
+        self.bets = 0
 
     def set_chips(self):
         if self.chips == 0:
@@ -78,11 +92,18 @@ class UserPlayer(Player):
             log("한 번 오신 적이 있으시군요.", f"남은 칩은 {self.chips}개 입니다.")
         log("게임을 시작합니다.")
 
+    def prepare(self):
+        super().prepare()
+        self.set_chips()
+        self.bet_chips()
+        self.plays += 1
+
     @property
     def win_rate(self):
         return int(self.wins / self.plays * 100)
 
-    def __str__(self):
+    @property
+    def info(self):
         return (
             f"게임 횟수 : {self.plays} / "
             f"승리 횟수 : {self.wins} / "
@@ -103,15 +124,13 @@ class UserPlayer(Player):
                 break
             self.draw()
 
-
-
-    def win(self, prize: int):
+    def win(self):
         super().win()
         self.wins += 1
         if self.card_sum == 21:
-            self.chips += prize * 2
+            self.chips += self.bets * 2
         else:
-            self.chips += int(prize * 1.5)
+            self.chips += int(self.bets * 1.5)
 
     def bet_chips(self):
         def get_int_input(ask: str, max: int):
@@ -124,13 +143,12 @@ class UserPlayer(Player):
                 except:
                     print("잘못 입력하셨습니다")
 
-        result = get_int_input(
+        self.bets = get_int_input(
             f"남은 칩 : {self.chips}\n베팅 금액을 정해주십시오.\n",
             self.chips,
         )
-        self.say(f"{result}개 베팅하셨습니다.")
-        self.chips -= result
-        return result
+        self.say(f"{self.bets}개 베팅하셨습니다.")
+        self.chips -= self.bets
 
 
 class DealerPlayer(Player):
