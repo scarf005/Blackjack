@@ -1,9 +1,10 @@
 from playingcards import Cards, cards
 from utils import choose, log, how_to_play, farewell_greeting
-from players import HumanPlayer, DealerPlayer, Deck
+from dealer import Dealer
+from player import Player
 
 
-def check_winner(player: HumanPlayer, rival: DealerPlayer):
+def check_winner(player: Player, rival: Dealer):
     player.say(player.card_sum)
     rival.say(rival.card_sum)
     if not player.bust and (rival.bust or player.card_sum >= rival.card_sum):
@@ -11,7 +12,7 @@ def check_winner(player: HumanPlayer, rival: DealerPlayer):
     return rival.win()
 
 
-def play_game(player: HumanPlayer, dealer: DealerPlayer):
+def play_game(player: Player, dealer: Dealer):
     while True:
         player.prepare()
         dealer.prepare()
@@ -31,12 +32,13 @@ def play_game(player: HumanPlayer, dealer: DealerPlayer):
 
 
 def main():
-    player = HumanPlayer()
-    dealer = DealerPlayer()
+    player = Player()
+    dealer = Dealer()
 
     while True:
         log("블랙잭에 오신 것을 환영합니다.")
-        match choose("게임 시작", "룰 설명", "나가기"):
+        result = choose("게임 시작", "룰 설명", "나가기")
+        match result:
             case "게임 시작":
                 play_game(player, dealer)
             case "룰 설명":
