@@ -1,4 +1,4 @@
-from baseplayer import BasePlayer
+from .baseplayer import BasePlayer
 from utils import log, choose, BLACKJACK
 
 
@@ -48,7 +48,8 @@ class Player(BasePlayer):
 
     def play_turn(self):
         self.draw(2)
-        while not self.bust:
+        while not (self.blackjack or self.bust):
+            self.show_hands()
             if choose("힛", "스테이") == "스테이":
                 break
             self.draw()
@@ -73,7 +74,7 @@ class Player(BasePlayer):
                     print("잘못 입력하셨습니다")
 
         self.bets = get_int_input(
-            f"남은 칩 : {self.chips}\n베팅 금액을 정해주십시오.\n",
+            f"남은 칩 : {self.chips}\n베팅 금액을 정해주십시오. ",
             self.chips,
         )
         self.say(f"{self.bets}개 베팅하셨습니다.")

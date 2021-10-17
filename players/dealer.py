@@ -1,4 +1,5 @@
-from baseplayer import BasePlayer
+from .baseplayer import BasePlayer
+
 
 class Dealer(BasePlayer):
     def __init__(self):
@@ -11,7 +12,10 @@ class Dealer(BasePlayer):
 
     def play_turn(self):
         self.draw(2)
+        self.show_hands()
         while self.card_sum < 17:
             self.say("힛.")
             self.draw()
-        self.say("스테이.")
+            self.show_hands()
+        if not self.blackjack:
+            self.say("스테이.")
