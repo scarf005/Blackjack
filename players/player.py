@@ -15,7 +15,7 @@ class Player(BasePlayer):
             self.chips = 50
         else:
             result = [
-                "한 번 오신 적이 있으시군요.",
+                "전에 오신 적이 있으시군요.",
                 f"남은 칩은 {self.chips}개 입니다.",
             ]
         result.append("게임을 시작합니다.")
@@ -57,10 +57,12 @@ class Player(BasePlayer):
     def win(self):
         super().win()
         self.wins += 1
+
+        multiplier = 1.5
         if self.card_sum == BLACKJACK:
-            self.chips += self.bets * 2
-        else:
-            self.chips += int(self.bets * 1.5)
+            multiplier = 2
+
+        self.chips += int(self.bets * multiplier)
 
     def bet_chips(self):
         def get_int_input(ask: str, max: int):
