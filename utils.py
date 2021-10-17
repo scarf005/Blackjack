@@ -1,11 +1,15 @@
 from typing import Optional
+from termcolor import cprint
 import sys
 
 BLACKJACK = 21
 _LINE_WIDTH = 60
+_CTRL_C = "\x03"
+_LOG_COLOR = "green"
 
 if sys.platform == "win32":
     import msvcrt
+
     getch = lambda: msvcrt.getch()
 
 else:
@@ -19,6 +23,9 @@ else:
             ch = sys.stdin.read(1)
         finally:
             termios.tcsetattr(fd, termios.TCSADRAIN, original_attributes)
+        if ch == _CTRL_C:
+            sys.tracebacklimit = 0
+            raise KeyboardInterrupt
         return ch
 
     getch = _getch
@@ -28,7 +35,7 @@ def choose(action_1: str, action_2: str, other: Optional[str] = None):
     def choose_two_or(action_1: str, action_2: str, other: str):
         try:
             return [action_1, action_2][int(getch()) - 1]
-        except:
+        except ValueError:
             return other
 
     def choose_two(action_1: str, action_2: str):
@@ -47,16 +54,12 @@ def choose(action_1: str, action_2: str, other: Optional[str] = None):
 
 
 def log(line: str, *lines: str):
-    print("=" * _LINE_WIDTH)
+    cprint("=" * _LINE_WIDTH, _LOG_COLOR)
 
     for line in [line, *lines]:
-        pad_print(line)
+        cprint(f"{line:>30}", _LOG_COLOR)
 
-    print("=" * _LINE_WIDTH)
-
-
-def pad_print(string: str):
-    print(f"{string:>30}")
+    cprint("=" * _LINE_WIDTH, _LOG_COLOR)
 
 
 def how_to_play():
@@ -70,27 +73,3 @@ def how_to_play():
         "딜러는 숫자의 합이 17 이상이 될때까지 무조건 히트를 합니다.",
         "상대보다 합이 높거나, 상대가 Bust되면 플레이어의 승리입니다.",
     )
-
-
-def farewell_greeting(chips):
-    if chips > 2000:
-        log(
-            "이런 얘기를 꺼내게 되서 안타깝습니다만",
-            "앞으로 더 이상 저희 카지노에 입장하실 수 없습니다.",
-            "무슨 뜻인지 충분히 이해하셨을 거라 생각합니다.",
-        )
-    elif chips > 1000:
-        log(
-            "제 눈을 믿을 수가 없군요.",
-            "손님이 세우신 업적으로 카지노가 들썩거리고 있습니다.",
-            "멋진 플레이를 보여주신 것에 대한 보답입니다.",
-            "빠른 시일 내에 다시 방문해주시기를 간절히 기도하겠습니다.",
-        )
-    elif chips > 500:
-        log(
-            "정말 놀랍군요.",
-            "행운의 여신의 사랑을 받고 계신 것 같습니다.",
-            "저희 카지노 측에서 준비한 소정의 선물입니다.",
-            "다음 번에도 또 찾아와주십시오.",
-        )
-    log("즐거운 시간이 되셨기를 바랍니다.", "안녕히 가십시오.")

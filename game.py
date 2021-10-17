@@ -1,7 +1,5 @@
-from playingcards import Cards, cards
-from utils import choose, log, how_to_play, farewell_greeting
+from utils import choose, log, how_to_play
 from players import Player, Dealer
-
 
 def check_winner(player: Player, rival: Dealer):
     player.say(player.card_sum)
@@ -31,21 +29,18 @@ def play_game(player: Player, dealer: Dealer):
 
 
 def main():
-    player = Player()
-    dealer = Dealer()
+    player, dealer = Player(), Dealer()
 
     while True:
         log("블랙잭에 오신 것을 환영합니다.")
-        result = choose("게임 시작", "나가기", "룰 설명")
-        match result:
+        match choose("게임 시작", "나가기", "룰 설명"):
             case "게임 시작":
                 play_game(player, dealer)
             case "나가기":
                 break
             case _:
                 how_to_play()
-
-    farewell_greeting(player.chips)
+    log("즐거운 시간이 되셨기를 바랍니다.", "안녕히 가십시오.")
 
 if __name__ == "__main__":
     main()

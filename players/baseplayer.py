@@ -1,6 +1,7 @@
 from utils import log, choose, BLACKJACK
 from playingcards import cards, Cards
 from random import shuffle
+from termcolor import cprint
 
 
 def shuffle_deck(verbose=False) -> Cards:
@@ -15,7 +16,8 @@ Deck = shuffle_deck()
 
 
 class BasePlayer:
-    def __init__(self, name):
+    def __init__(self, name, color):
+        self.color = color
         self.name = name
         self.chips = 0
 
@@ -64,11 +66,11 @@ class BasePlayer:
     def show_hands(self):
         self.say(f"{self.card_sum}점, 손패{self.hand}")
 
-    def say(self, content):
-        print(f"{self.name}: {content}")
-
     def win(self):
-        print(f"{self.name}의 승리입니다")
+        self.say(f"승리했습니다!")
+
+    def say(self, content):
+        cprint(f"{self.name}: {content}", self.color)
 
     def play_turn(self):
         raise NotImplementedError

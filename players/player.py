@@ -4,7 +4,7 @@ from utils import log, choose, BLACKJACK
 
 class Player(BasePlayer):
     def __init__(self):
-        super().__init__("사용자")
+        super().__init__("사용자", "cyan")
         self.wins = 0
         self.plays = 0
         self.bets = 0

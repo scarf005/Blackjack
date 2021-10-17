@@ -3,7 +3,7 @@ from .baseplayer import BasePlayer
 
 class Dealer(BasePlayer):
     def __init__(self):
-        super().__init__("딜러")
+        super().__init__("딜러", "magenta")
 
     def cardcal(self, cardlast):
         if "A" in cardlast:
@@ -12,10 +12,9 @@ class Dealer(BasePlayer):
 
     def play_turn(self):
         self.draw(2)
-        self.show_hands()
         while self.card_sum < 17:
+            self.show_hands()
             self.say("힛.")
             self.draw()
-            self.show_hands()
-        if not self.blackjack:
+        if not any((self.bust, self.blackjack)):
             self.say("스테이.")
